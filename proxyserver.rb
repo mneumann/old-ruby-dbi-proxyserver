@@ -1,5 +1,5 @@
 #
-# $Id: proxyserver.rb,v 1.1 2001/11/17 17:17:53 michael Exp $
+# $Id: proxyserver.rb,v 1.2 2002/02/06 17:27:08 mneumann Exp $
 # Copyright (c) 2001 by Michael Neumann (neumann@s-direktnet.de)
 # 
 
@@ -9,7 +9,7 @@ require "dbi"
 module DBI
 module ProxyServer
 
-USED_DBD_API = "0.1"
+USED_DBD_API = "0.2"
 
 module HelperMixin
   def catch_exception
@@ -68,7 +68,7 @@ end # class ProxyServer
 class DatabaseProxy
   include HelperMixin
   
-  METHODS = %w(ping commit rollback tables execute do quote [] []=)
+  METHODS = %w(ping commit rollback tables execute do quote [] []= columns)
 
   attr_reader :statements
 
@@ -105,7 +105,7 @@ class StatementProxy
   include HelperMixin
 
   METHODS = %w(bind_param execute fetch column_info bind_params
-               cancel fetch_scroll fetch_many fetch_all)
+               cancel fetch_scroll fetch_many fetch_all rows)
 
   def initialize(parent, sth)
     @parent = parent
@@ -136,7 +136,7 @@ end # module DBI
 
 
 if __FILE__ == $0
-  unless DBI::DBD::API_VERSION.split(".")[0].to_i != DBI::DBD::DBI::ProxyServer::USED_DBD_API.split(".")[0].to_i 
+  if DBI::DBD::API_VERSION.split(".")[0].to_i != DBI::DBD::DBI::ProxyServer::USED_DBD_API.split(".")[0].to_i 
     raise "Wrong DBD Version"
   end
   
